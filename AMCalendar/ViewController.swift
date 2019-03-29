@@ -50,6 +50,7 @@ class ViewController: UIViewController {
         layout.sectionInset = UIEdgeInsets(top: 3, left: 3, bottom: 3, right: 3)
         layout.minimumLineSpacing = 0
         layout.minimumInteritemSpacing = 0
+        layout.headerReferenceSize = CGSize(width: UIScreen.main.bounds.width, height: 50)
         let collectionView = UICollectionView.init(frame: CGRect.zero, collectionViewLayout: layout)
         view.addSubview(collectionView)
         
@@ -57,6 +58,7 @@ class ViewController: UIViewController {
         collectionView.delegate = self
         collectionView.dataSource = self
         collectionView.register(AMCell.self, forCellWithReuseIdentifier: AMCell.identifier)
+        collectionView.register(AMHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: AMHeader.identifier)
         
         layout.scrollDirection = .vertical
         
@@ -73,10 +75,18 @@ class ViewController: UIViewController {
 
 extension ViewController : UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     
+    
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         
         if kind == UICollectionView.elementKindSectionHeader {
+            let header = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: AMHeader.identifier, for: indexPath) as! AMHeader
             
+            //header.frame = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 50)
+
+//            let monthComponents = self.calendar.dateComponents([.month], from: self.startDateCache, to: self.endDateCache)
+//            let monthComponent = monthComponents
+
+            return header
         }
         
         return AMHeader()
@@ -164,6 +174,15 @@ extension ViewController : UICollectionViewDelegate, UICollectionViewDataSource,
             cell.isHidden = true
         }
         
+        if let todayIndexPath = self.todayIndexPath {
+            if indexPath == IndexPath(row: todayIndexPath.row + firstDayIndex, section: todayIndexPath.section) {
+                cell.label.textColor = .gray
+            } else {
+                cell.label.textColor = .black
+            }
+        } else {
+            cell.label.textColor = .black
+        }
         
         if indexPath == startSelectedIndexPath || indexPath == endISelectedndexPath {
             cell.backgroundColor = .blue
@@ -183,9 +202,6 @@ extension ViewController : UICollectionViewDelegate, UICollectionViewDataSource,
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard let (firstDayIndex, numberOfDaysTotal) = self.monthInfoForSection[indexPath.section] else { return }
-        print("\(firstDayIndex) , \(numberOfDaysTotal)")
-        
         if startSelectedIndexPath == nil {
             startSelectedIndexPath = indexPath
         } else {
@@ -198,7 +214,6 @@ extension ViewController : UICollectionViewDelegate, UICollectionViewDataSource,
                 }
             }
         }
-        
         collectionView.reloadData()
     }
 }
@@ -206,7 +221,58 @@ extension ViewController : UICollectionViewDelegate, UICollectionViewDataSource,
 class AMHeader : UICollectionReusableView {
     
     static let identifier = "CollectionHeader"
+//    let label = UILabel()
+    let daysStack = UIStackView()
     
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        configUI()
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    func configUI() {
+        
+//        label.textAlignment = .center
+//
+//        self.addSubview(label)
+//        label.translatesAutoresizingMaskIntoConstraints = false
+//        let trailing = NSLayoutConstraint(item: label, attribute: .trailing, relatedBy: .equal, toItem: label.superview, attribute: .trailing, multiplier: 1, constant: 0)
+//        let leading = NSLayoutConstraint(item: label, attribute: .leading, relatedBy: .equal, toItem: label.superview, attribute: .leading, multiplier: 1, constant: 0)
+//        let top = NSLayoutConstraint(item: label, attribute: .top, relatedBy: .equal, toItem: label.superview, attribute: .top, multiplier: 1, constant: 0)
+//        self.addConstraints([top, leading, trailing])
+//
+        self.addSubview(daysStack)
+        daysStack.translatesAutoresizingMaskIntoConstraints = false
+        let strailing = NSLayoutConstraint(item: daysStack, attribute: .trailing, relatedBy: .equal, toItem: daysStack.superview, attribute: .trailing, multiplier: 1, constant: 0)
+        let sleading = NSLayoutConstraint(item: daysStack, attribute: .leading, relatedBy: .equal, toItem: daysStack.superview, attribute: .leading, multiplier: 1, constant: 0)
+        let stop = NSLayoutConstraint(item: daysStack, attribute: .top, relatedBy: .equal, toItem: daysStack.superview, attribute: .top, multiplier: 1, constant: 0)
+        let sbottom = NSLayoutConstraint(item: daysStack, attribute: .bottom, relatedBy: .equal, toItem: daysStack.superview, attribute: .bottom, multiplier: 1, constant: 0)
+        self.addConstraints([stop, sleading, strailing, sbottom])
+
+
+        daysStack.distribution = .fillEqually
+        daysStack.axis = .horizontal
+        daysStack.spacing = 3
+
+        let fmt = DateFormatter()
+        let firstWeekday = 2 // -> Monday
+        if var symbols = fmt.shortWeekdaySymbols {
+            symbols = Array(symbols[firstWeekday-1..<symbols.count]) + symbols[0..<firstWeekday-1]
+            for day in symbols {
+                let v = UILabel()
+                v.backgroundColor = .yellow
+                v.textAlignment = .center
+                let width = (UIScreen.main.bounds.width / 7) - 6
+                v.addConstraint(NSLayoutConstraint(item: v, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1, constant: width))
+                v.addConstraint(NSLayoutConstraint(item: v, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .width, multiplier: 1, constant: width))
+                v.text = day
+                daysStack.addArrangedSubview(v)
+            }
+        }
+    }
 }
 
 class AMCell : UICollectionViewCell {
