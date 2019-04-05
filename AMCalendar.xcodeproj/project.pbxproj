@@ -12,6 +12,7 @@
 		13CDC7F92249D92F007664DC /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 13CDC7F72249D92F007664DC /* Main.storyboard */; };
 		13CDC7FB2249D932007664DC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13CDC7FA2249D932007664DC /* Assets.xcassets */; };
 		13CDC7FE2249D932007664DC /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 13CDC7FC2249D932007664DC /* LaunchScreen.storyboard */; };
+		13FEF55A22520865004A527C /* AMCalendarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13FEF55922520865004A527C /* AMCalendarViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,6 +23,7 @@
 		13CDC7FA2249D932007664DC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		13CDC7FD2249D932007664DC /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		13CDC7FF2249D932007664DC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		13FEF55922520865004A527C /* AMCalendarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AMCalendarViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,12 +56,21 @@
 		13CDC7F22249D92F007664DC /* AMCalendar */ = {
 			isa = PBXGroup;
 			children = (
+				13FEF55822520837004A527C /* AMCalendar */,
 				13CDC7F32249D92F007664DC /* AppDelegate.swift */,
 				13CDC7F52249D92F007664DC /* ViewController.swift */,
 				13CDC7F72249D92F007664DC /* Main.storyboard */,
 				13CDC7FA2249D932007664DC /* Assets.xcassets */,
 				13CDC7FC2249D932007664DC /* LaunchScreen.storyboard */,
 				13CDC7FF2249D932007664DC /* Info.plist */,
+			);
+			path = AMCalendar;
+			sourceTree = "<group>";
+		};
+		13FEF55822520837004A527C /* AMCalendar */ = {
+			isa = PBXGroup;
+			children = (
+				13FEF55922520865004A527C /* AMCalendarViewController.swift */,
 			);
 			path = AMCalendar;
 			sourceTree = "<group>";
@@ -136,6 +147,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				13CDC7F62249D92F007664DC /* ViewController.swift in Sources */,
+				13FEF55A22520865004A527C /* AMCalendarViewController.swift in Sources */,
 				13CDC7F42249D92F007664DC /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
