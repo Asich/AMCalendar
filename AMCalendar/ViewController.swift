@@ -34,12 +34,17 @@ class ViewController: UIViewController {
         calendar.timeZone = Style.timeZone
         
         var dateComponents = DateComponents()
-        dateComponents.year = -1
+        dateComponents.month = -5
+//        dateComponents.year = -1
         let today = Date()
         let twoYearsFromNow = calendar.date(byAdding: dateComponents, to: today)!
         
         
         let vc = AMCalendarViewController.init(startDate: Date(), endDate: twoYearsFromNow)
+        vc.completion = { date, date2 in
+            print("startDate: \(date)")
+            print("endDate: \(date2)")
+        }
         self.present(vc, animated: true, completion: nil)
     }
 }

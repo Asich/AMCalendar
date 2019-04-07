@@ -35,17 +35,18 @@ class AMCalendarViewController: UIViewController {
     }()
     
     var proceedButton = UIButton.init(type: .system)
-    var tapProceedButton : (()->())?
+    var completion : ((Date, Date) -> ())?
     
     var startDateCache     = Date()
     var endDateCache       = Date()
     var startOfMonthCache  = Date()
     var endOfMonthCache    = Date()
-    var todayIndexPath: IndexPath?
     var monthInfoForSection = [Int:(firstDay: Int, daysTotal: Int)]()
+    var todayIndexPath: IndexPath?
     
     var startSelectedIndexPath : IndexPath?
     var endISelectedndexPath : IndexPath?
+
     
     init(startDate:Date, endDate:Date)
     {
@@ -60,15 +61,13 @@ class AMCalendarViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         configUI()
     }
     
     func configUI() {
         
         let layout = UICollectionViewFlowLayout.init()
-        layout.itemSize = CGSize(width: (UIScreen.main.bounds.width / 7), height: (UIScreen.main.bounds.width / 7))
-        //layout.sectionInset = UIEdgeInsets(top: 3, left: 3, bottom: 3, right: 3)
+        layout.sectionInset = UIEdgeInsets.zero
         layout.minimumLineSpacing = 0
         layout.minimumInteritemSpacing = 0
         layout.headerReferenceSize = CGSize(width: UIScreen.main.bounds.width, height: 100)
@@ -110,17 +109,49 @@ class AMCalendarViewController: UIViewController {
     @objc
     func clickProceedButton() {
         self.dismiss(animated: true) {
-            if let tapProceedButton = self.tapProceedButton {
-                tapProceedButton()
+            guard let completion = self.completion,
+                  let startIndex = self.startSelectedIndexPath,
+                  let endIndex = self.endISelectedndexPath else {
+                return
             }
+
+            guard let startDate = dateFromIndexPath(startIndex),
+                  let endDate = dateFromIndexPath(endIndex) else {
+                return
+            }
+
+            if startDate > endDate {
+                completion(startDate, endDate)
+            } else {
+                completion(endDate, startDate)
+            }
+        }
+
+        func dateFromIndexPath(_ indexPath: IndexPath) -> Date? {
+
+            let month = indexPath.section
+
+            guard let monthInfo = monthInfoForSection[month] else { return nil }
+
+            var components      = DateComponents()
+            components.month    = month
+            components.day      = indexPath.item - monthInfo.firstDay + 1
+
+            return self.calendar.date(byAdding: components, to: self.startOfMonthCache)
         }
     }
 }
 
-
 extension AMCalendarViewController : UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
-    
-    
+    public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let width = Int(UIScreen.main.bounds.width)
+        let side = width / 7
+        let rem = width % 7
+        let addOne = indexPath.row % 7 < rem
+        let ceilWidth = addOne ? side + 1 : side
+        return CGSize(width: ceilWidth, height: side)
+    }
+
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         
         if kind == UICollectionView.elementKindSectionHeader {
